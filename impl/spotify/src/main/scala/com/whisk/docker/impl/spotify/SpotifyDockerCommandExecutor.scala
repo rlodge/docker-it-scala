@@ -6,7 +6,7 @@ import java.util.Collections
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
-import com.google.common.io.Closeables
+import com.spotify.docker.client.shaded.com.google.common.io.Closeables
 import com.spotify.docker.client.DockerClient.{AttachParameter, RemoveContainerParam}
 import com.spotify.docker.client.exceptions.ContainerNotFoundException
 import com.spotify.docker.client.messages.{ContainerConfig, HostConfig, PortBinding}

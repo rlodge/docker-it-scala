@@ -1,6 +1,6 @@
 lazy val commonSettings = Seq(
   organization := "com.whisk",
-  version := "0.9.9",
+  version := "0.9.9-C",
   scalaVersion := "2.13.0",
   crossScalaVersions := Seq("2.13.0", "2.12.8", "2.11.12"),
   scalacOptions ++= Seq("-feature", "-deprecation"),
@@ -8,7 +8,9 @@ lazy val commonSettings = Seq(
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
   sonatypeProfileName := "com.whisk",
   publishMavenStyle := true,
-  publishTo := Some(Opts.resolver.sonatypeStaging),
+  publishTo := Some("Private Nexus" at System.getenv("DEPLOYMENT_REPOSITORY_URI")),
+  credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+  resolvers += Resolver.mavenLocal,
   pomExtra in Global := {
     <url>https://github.com/whisklabs/docker-it-scala</url>
       <scm>
@@ -44,14 +46,24 @@ lazy val core =
     .settings(name := "docker-testkit-core",
               libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.22")
 
+//<dependency>
+//  <groupId>com.github.jnr</groupId>
+//  <artifactId>jffi</artifactId>
+//  <version>1.2.15</version>
+//</dependency>
+// "com.github.jnr" % "jffi" % "1.2.15"
+
+
 lazy val testkitSpotifyImpl =
   project
     .in(file("impl/spotify"))
     .settings(commonSettings: _*)
     .settings(name := "docker-testkit-impl-spotify",
               libraryDependencies ++=
-                Seq("com.spotify" % "docker-client" % "8.11.5",
-                    "com.google.code.findbugs" % "jsr305" % "3.0.1"))
+                Seq("com.spotify" % "docker-client" % "8.16.0-C",
+                    "com.google.code.findbugs" % "jsr305" % "3.0.1",
+                    "com.github.jnr" % "jffi" % "1.2.15",
+                    "com.github.jnr" % "jffi" % "1.2.15" classifier "native"))
     .dependsOn(core)
 
 lazy val testkitSpotifyShadedImpl =
@@ -60,8 +72,10 @@ lazy val testkitSpotifyShadedImpl =
     .settings(commonSettings: _*)
     .settings(name := "docker-testkit-impl-spotify-shaded",
               libraryDependencies ++=
-                Seq("com.spotify" % "docker-client" % "8.11.5" classifier "shaded",
-                    "com.google.code.findbugs" % "jsr305" % "3.0.1"),
+                Seq("com.spotify" % "docker-client" % "8.16.0-C",
+                    "com.google.code.findbugs" % "jsr305" % "3.0.1",
+                    "com.github.jnr" % "jffi" % "1.2.15",
+                    "com.github.jnr" % "jffi" % "1.2.15" classifier "native"),
               target := baseDirectory.value / "target-shaded"
               )
     .dependsOn(core)
